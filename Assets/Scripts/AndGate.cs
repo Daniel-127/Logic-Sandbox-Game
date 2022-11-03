@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GateAnd : LogicGate
+public class AndGate : BinaryLogicGate
 {
     protected override bool ComputeValue()
     {
