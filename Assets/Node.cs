@@ -6,43 +6,62 @@ using UnityEngine;
 public abstract class Node : MonoBehaviour
 {
     public static Node hoveringOver;
-    public static Node dragginFrom;
+    public static Node draggingFrom;
+
 
     protected abstract NodeType Type { get; }
 
-    [SerializeField] 
-    SpriteRenderer sr;
+    [SerializeField]
+    protected SpriteRenderer sr;
 
-    [SerializeField] 
-    LineRenderer lr;
+    [SerializeField]
+    protected LineRenderer lr;
 
     //Binding
-    Node bound;
-    LineRenderer boundLr;
+    public Action<Vector3> OnMoved { get; set; }
+
 
     readonly Color off = new Color(0.5f, 0.5f, 0.5f);
     readonly Color on = Color.white;
     readonly Color darken = new Color(0.15f, 0.15f, 0.15f, 0);
 
-    void BindNode(Node other, LineRenderer lr)
-    {
-        bound = other;
-        boundLr = lr;
-    }
+    public abstract bool GetValue();
+    protected abstract void Bind(Node other);
 
     bool BindCompatible(Node other)
     {
-        return Type != other.Type;
+        bool siblings = transform.parent != null && other.transform.parent != null && transform.parent == other.transform.parent;
+        return Type != other.Type & !siblings;
     }
 
-    void Start()
+    protected void SetColor(bool value)
+    {
+        sr.color = value ? on : off;
+    }
+
+    protected void UpdateLineStartPosition(Vector3 pos)
+    {
+        lr.SetPosition(0, (Vector2)pos);
+    }
+
+    protected void UpdateLineEndPosition(Vector3 pos)
+    {
+        lr.SetPosition(1, (Vector2)pos);
+    }
+
+    protected virtual void Start()
     {
         lr.positionCount = 2;
     }
 
+    void Update()
+    {
+        OnMoved?.Invoke(transform.position);
+    }
+
     void OnMouseEnter()
     {
-        if (!(dragginFrom != null && !BindCompatible(dragginFrom)))
+        if (!(draggingFrom != null && !BindCompatible(draggingFrom)))
         {
             sr.color -= darken;
             hoveringOver = this;
@@ -63,9 +82,9 @@ public abstract class Node : MonoBehaviour
         lr.SetPosition(1, (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition));
     }
 
-    void OnMouseDown()
+    protected virtual void OnMouseDown()
     {
-        dragginFrom = this;
+        draggingFrom = this;
         lr.enabled = true;
         lr.SetPosition(0, transform.position);
     }
@@ -74,15 +93,14 @@ public abstract class Node : MonoBehaviour
     {
         if (hoveringOver != null & hoveringOver != this)
         {
-            bound = hoveringOver;
-            hoveringOver.BindNode(this, lr);
-            lr.SetPosition(1, hoveringOver.transform.position);
+            Bind(hoveringOver);
+            hoveringOver.Bind(this);
         }
         else
         {
             lr.enabled = false;
         }
-        dragginFrom = null;
+        draggingFrom = null;
     }
 
     public enum NodeType { Input, Output }

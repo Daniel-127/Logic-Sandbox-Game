@@ -90,12 +90,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7382597493615211625}
-  - component: {fileID: 7382597493615211670}
   - component: {fileID: 7382597493615211671}
   - component: {fileID: 7382597493615211624}
   - component: {fileID: 945452930}
+  - component: {fileID: 7860328278256587813}
   m_Layer: 0
-  m_Name: NodePrefab
+  m_Name: InputNodePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,20 +116,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7382597493615211670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7382597493615211668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf2512bc4f11ab0448efbd5c763604e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sr: {fileID: 7382597493615211671}
-  lr: {fileID: 945452930}
 --- !u!212 &7382597493615211671
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -291,3 +277,17 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &7860328278256587813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7382597493615211668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 632724c08824ecb408ce5e53e6c07cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sr: {fileID: 7382597493615211671}
+  lr: {fileID: 945452930}
