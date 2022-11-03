@@ -8,7 +8,6 @@ public abstract class Node : MonoBehaviour
     public static Node hoveringOver;
     public static Node draggingFrom;
 
-
     protected abstract NodeType Type { get; }
 
     [SerializeField]
@@ -17,7 +16,6 @@ public abstract class Node : MonoBehaviour
     [SerializeField]
     protected LineRenderer lr;
 
-    //Binding
     public Action<Vector3> OnMoved { get; set; }
 
 
@@ -25,7 +23,23 @@ public abstract class Node : MonoBehaviour
     readonly Color on = Color.white;
     readonly Color darken = new Color(0.15f, 0.15f, 0.15f, 0);
 
+    bool SelfHover { get => hoveringOver == this; }
+
+    private bool value;
+    protected bool Value {
+        get
+        {
+            return value;
+        }
+        set
+        {
+            this.value = value;
+            UpdateColor();
+        } 
+    }
+
     public abstract bool GetValue();
+    public abstract void UpdateValue(bool newValue);
     protected abstract void Bind(Node other);
 
     bool BindCompatible(Node other)
@@ -33,20 +47,11 @@ public abstract class Node : MonoBehaviour
         bool siblings = transform.parent != null && other.transform.parent != null && transform.parent == other.transform.parent;
         return Type != other.Type & !siblings;
     }
-
-    protected void SetColor(bool value)
+    protected virtual void UpdateColor()
     {
-        sr.color = value ? on : off;
-    }
-
-    protected void UpdateLineStartPosition(Vector3 pos)
-    {
-        lr.SetPosition(0, (Vector2)pos);
-    }
-
-    protected void UpdateLineEndPosition(Vector3 pos)
-    {
-        lr.SetPosition(1, (Vector2)pos);
+        var baseColor = value ? on : off;
+        var tinted = SelfHover ? baseColor - darken : baseColor;
+        sr.color = tinted;
     }
 
     protected virtual void Start()
@@ -63,20 +68,19 @@ public abstract class Node : MonoBehaviour
     {
         if (!(draggingFrom != null && !BindCompatible(draggingFrom)))
         {
-            sr.color -= darken;
             hoveringOver = this;
+            UpdateColor();
         }
     }
 
     void OnMouseExit()
     {
-        if (hoveringOver == this)
+        if (SelfHover)
         {
-            sr.color += darken;
             hoveringOver = null;
+            UpdateColor();
         }
     }
-
     void OnMouseDrag()
     {
         lr.SetPosition(1, (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition));
@@ -91,7 +95,7 @@ public abstract class Node : MonoBehaviour
 
     void OnMouseUp()
     {
-        if (hoveringOver != null & hoveringOver != this)
+        if (hoveringOver != null & !SelfHover)
         {
             Bind(hoveringOver);
             hoveringOver.Bind(this);

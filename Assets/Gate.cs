@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class Gate : MonoBehaviour
 {
-
+    public abstract void Compute();
 }

@@ -5,17 +5,30 @@ using System;
 
 public class OutputNode : Node
 {
+    readonly ICollection<Node> bounded = new List<Node>();
     protected override NodeType Type => NodeType.Output;
-
-    public Func<bool> GetValueExternally { private get; set; }
-
     public override bool GetValue()
     {
-        return GetValueExternally();
+        return Value;
+    }
+    public override void UpdateValue(bool newValue)
+    {
+        Value = newValue;
+        foreach(var bound in bounded)
+        {
+            bound.UpdateValue(newValue);
+        }
     }
 
     protected override void Bind(Node other)
     {
+        bounded.Add(other);
         lr.enabled = false;
     }
+
+    public void Release(Node node)
+    {
+        bounded.Remove(node);
+    }
+
 }

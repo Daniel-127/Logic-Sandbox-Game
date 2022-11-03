@@ -4,17 +4,8 @@ using UnityEngine;
 
 public class SwitchNode : OutputNode
 {
-    private bool value = false;
-
-    protected override void Start()
-    {
-        base.Start();
-        GetValueExternally = () => value;
-    }
-
     void OnMouseUpAsButton()
     {
-        value = !value;
-        SetColor(value);
+        UpdateValue(!Value);
     }
 }
